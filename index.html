@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#d4537e">
+    <title>Emma's Closet ✦</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --primary: #d4537e;
+            --primary-light: #f9e8ef;
+            --blush: #fdf5f8;
+            --text: #2d1f28;
+            --text-light: #7a5a6a;
+            --white: #ffffff;
+            --border: #ecdde6;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'DM Sans', sans-serif;
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-sans); background: var(--blush); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+
+        /* ─── SPLASH SCREEN ─── */
+        #splash-screen {
+            position: fixed; inset: 0; background: var(--white); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out; pointer-events: none;
+        }
+        .splash-heart { font-size: 50px; animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        /* ─── AUTH SCREEN ─── */
+        #auth-screen {
+            display: none; height: 100vh; padding: 40px; text-align: center;
+            flex-direction: column; justify-content: center; background: var(--blush);
+        }
+        .auth-card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(212,83,126,0.1); }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; font-family: var(--font-sans); outline: none; }
+        input:focus { border-color: var(--primary); }
+
+        /* ─── APP SHELL ─── */
+        #app-shell { display: none; padding-top: 20px; }
+        
+        /* ─── BOTTOM NAV ─── */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(15px); border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; padding: 12px 0 calc(12px + var(--safe-bottom));
+            z-index: 1000;
+        }
+        .nav-item { border: none; background: none; color: var(--text-light); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; transition: 0.2s; }
+        .nav-item.active { color: var(--primary); transform: translateY(-2px); font-weight: 600; }
+        .nav-icon { font-size: 22px; }
+
+        /* ─── COMPONENTS ─── */
+        .weather-card {
+            background: white; margin: 0 20px 20px; padding: 20px; border-radius: 20px; 
+            border: 1px solid var(--border); display: flex; align-items: center; gap: 15px;
+            animation: slideIn 0.5s ease;
+        }
+        .page { display: none; padding: 0 20px 120px; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        
+        .clothes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .item-card { background: white; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: transform 0.2s; }
+        .item-card:active { transform: scale(0.97); }
+        .item-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+        .badge { position: absolute; top: 8px; left: 8px; background: rgba(255,255,255,0.85); padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--primary); }
+        
+        .btn-main { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 30px; font-weight: 600; width: 100%; font-size: 16px; margin-top: 10px; box-shadow: 0 4px 15px rgba(212,83,126,0.2); }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        h1 { font-family: var(--font-serif); font-weight: 400; font-size: 32px; }
+        .toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 24px; border-radius: 40px; z-index: 10000; display: none; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { from { opacity: 0; transform: translate(-50%, 20px); } }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast">Saved 💕</div>
+
+    <div id="splash-screen">
+        <div class="splash-heart">💖</div>
+        <h2 style="font-family: var(--font-serif); margin-top: 20px;">Welcome back, Emma 💕</h2>
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h1 style="margin-bottom: 24px;">Emma's Closet</h1>
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-password" placeholder="Password">
+            <button class="btn-main" onclick="handleLogin()">Enter Closet ✨</button>
+        </div>
+    </div>
+
+    <div id="app-shell">
+        <div id="weather-section"></div>
+
+        <div id="page-closet" class="page active">
+            <h1>Your Closet ✨</h1>
+            <p style="color: var(--text-light);">"What are we wearing today?"</p>
+            <div id="closet-list" class="clothes-grid"></div>
+        </div>
+
+        <div id="page-builder" class="page">
+            <h1>Outfit Builder</h1>
+            <p style="color: var(--text-light);">Let's build your outfit ✨</p>
+            <div id="builder-container" style="margin-top:20px;">
+                <p style="text-align:center; padding:40px; color:var(--text-light); border: 2px dashed var(--border); border-radius:20px;">Select items to start styling...</p>
+            </div>
+            <button class="btn-main" onclick="showToast()">Save Look 💕</button>
+        </div>
+
+        <div id="page-diary" class="page"><h1>Outfit Diary</h1></div>
+        <div id="page-wishlist" class="page"><h1>Wishlist</h1></div>
+        <div id="page-settings" class="page">
+            <h1>Settings</h1>
+            <button class="btn-main" style="background:#7a5a6a; margin-top:40px;" onclick="handleLogout()">Sign Out</button>
+        </div>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="navTo('closet', this)">
+                <span class="nav-icon">👗</span><span>Closet</span>
+            </button>
+            <button class="nav-item" onclick="navTo('builder', this)">
+                <span class="nav-icon">✨</span><span>Build</span>
+            </button>
+            <button class="nav-item" onclick="navTo('diary', this)">
+                <span class="nav-icon">📖</span><span>Diary</span>
+            </button>
+            <button class="nav-item" onclick="navTo('wishlist', this)">
+                <span class="nav-icon">💖</span><span>Wish</span>
+            </button>
+            <button class="nav-item" onclick="navTo('settings', this)">
+                <span class="nav-icon">⚙️</span><span>Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // SUPABASE CONFIG
+        const SB_URL = "https://ujcsgpayqbmqofemdthq.supabase.co";
+        const SB_KEY = "sb_publishable_X3cQYcOSjb4t1GyP2QSuIg_oK2MbOCR";
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        // SERVICE WORKER (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
+            });
+        }
+
+        // 1. Snappy Splash Logic
+        async function checkSession() {
+            const minWait = new Promise(res => setTimeout(res, 900)); // ~1 second
+            const { data: { session } } = await _supabase.auth.getSession();
+            await minWait;
+
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                if (session) { showApp(); } else { showAuth(); }
+            }, 500);
+        }
+
+        // 2. Auth Actions
+        async function handleLogin() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) { alert("Error: " + error.message); } else { showApp(); }
+        }
+
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            location.reload();
+        }
+
+        function showApp() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-shell').style.display = 'block';
+            loadCloset();
+            getWeather();
+        }
+
+        function showAuth() {
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+
+        // 3. Navigation
+        function navTo(pageId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            el.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // 4. Weather Logic (7Timer API - Free)
+        async function getWeather() {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`https://www.7timer.info/bin/api.pl?lon=${pos.coords.longitude}&lat=${pos.coords.latitude}&product=civil&output=json`);
+                    const data = await res.json();
+                    const temp = data.dataseries[0].temp2m;
+                    let advice = temp < 15 ? "Layers & jackets recommended 🧥" : "Perfect for something light! ☀️";
+                    document.getElementById('weather-section').innerHTML = `
+                        <div class="weather-card">
+                            <div style="font-size: 28px;">🌤️</div>
+                            <div>
+                                <div style="font-weight:600; font-size:13px;">Today's Outfit 💕</div>
+                                <div style="font-size:12px; color:var(--text-light)">${temp}°C — ${advice}</div>
+                            </div>
+                        </div>`;
+                } catch(e) { console.log("Weather failed", e); }
+            });
+        }
+
+        // 5. Data Loading
+        async function loadCloset() {
+            const { data: items, error } = await _supabase.from('clothes').select('*');
+            if (error) return console.log(error);
+            const list = document.getElementById('closet-list');
+            list.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <img src="${item.image_url}" class="item-img">
+                    <div class="badge">${item.category}</div>
+                    <div style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12px; font-weight:500;">${item.name}</span>
+                        <span>${item.favorite ? '❤️' : '🤍'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showToast() {
+            const t = document.getElementById('toast');
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2000);
+        }
+
+        window.onload = checkSession;
+    </script>
+</body>
+</html>
