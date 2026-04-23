@@ -1,257 +1,1847 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#d4537e">
-    <title>Emma's Closet ✦</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        :root {
-            --primary: #d4537e;
-            --primary-light: #f9e8ef;
-            --blush: #fdf5f8;
-            --text: #2d1f28;
-            --text-light: #7a5a6a;
-            --white: #ffffff;
-            --border: #ecdde6;
-            --font-serif: 'Cormorant Garamond', serif;
-            --font-sans: 'DM Sans', sans-serif;
-            --safe-bottom: env(safe-area-inset-bottom);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emma's Closet ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#d4537e;
+  --primary-light:#f9e8ef;
+  --primary-mid:#f2c8d9;
+  --primary-deep:#c44070;
+  --blush:#fdf5f8;--cream:#fefaf7;--nude:#f5ece4;
+  --text:#2d1f28;--text2:#7a5a6a;--text3:#b89aaa;
+  --white:#ffffff;--border:#ecdde6;
+  --font-serif:'Cormorant Garamond',serif;--font-sans:'DM Sans',sans-serif;
+  --bg:var(--blush);
+  --card-bg:var(--white);
+  --nav-bg:var(--white);
+  --input-bg:var(--blush);
+  --shadow:rgba(212,83,126,0.10);
+}
+body.dark{
+  --blush:#1a1018;--cream:#221520;--nude:#2a1d24;
+  --text:#f5e8ef;--text2:#c9a0b5;--text3:#8a6070;
+  --white:#2d1f28;--border:#4a2f3d;
+  --bg:#1a1018;--card-bg:#2d1f28;--nav-bg:#221520;--input-bg:#2a1d24;
+  --shadow:rgba(0,0,0,0.4);
+}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: var(--font-sans); background: var(--blush); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+/* HEADER */
+.header{background:var(--nav-bg);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;transition:background 0.3s}
+.logo{font-family:var(--font-serif);font-size:21px;font-weight:300;font-style:italic;color:var(--text);letter-spacing:0.02em}
+.logo span{color:var(--primary)}
+.header-sub{font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
+.header-right{display:flex;gap:8px;align-items:center}
 
-        /* ─── SPLASH SCREEN ─── */
-        #splash-screen {
-            position: fixed; inset: 0; background: var(--white); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease-out; pointer-events: none;
-        }
-        .splash-heart { font-size: 50px; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+/* NAV */
+.nav{display:flex;background:var(--nav-bg);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;transition:background 0.3s}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:1;min-width:60px;padding:11px 6px;border:none;background:transparent;font-family:var(--font-sans);font-size:10px;font-weight:400;color:var(--text3);cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;border-bottom:2px solid transparent;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav-btn.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:500}
+.nav-icon{font-size:15px}
 
-        /* ─── AUTH SCREEN ─── */
-        #auth-screen {
-            display: none; height: 100vh; padding: 40px; text-align: center;
-            flex-direction: column; justify-content: center; background: var(--blush);
-        }
-        .auth-card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(212,83,126,0.1); }
-        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; font-family: var(--font-sans); outline: none; }
-        input:focus { border-color: var(--primary); }
+/* PAGES */
+.page{display:none;padding:16px;min-height:calc(100vh - 120px);animation:fadeIn 0.25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-        /* ─── APP SHELL ─── */
-        #app-shell { display: none; padding-top: 20px; }
-        
-        /* ─── BOTTOM NAV ─── */
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(15px); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; padding: 12px 0 calc(12px + var(--safe-bottom));
-            z-index: 1000;
-        }
-        .nav-item { border: none; background: none; color: var(--text-light); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; transition: 0.2s; }
-        .nav-item.active { color: var(--primary); transform: translateY(-2px); font-weight: 600; }
-        .nav-icon { font-size: 22px; }
+/* HOME PAGE */
+.home-hero{text-align:center;padding:36px 20px 28px;background:linear-gradient(160deg,var(--primary-light) 0%,var(--cream) 100%);border-radius:20px;margin-bottom:20px;border:1px solid var(--border)}
+.home-greeting{font-family:var(--font-serif);font-size:13px;font-style:italic;color:var(--text2);letter-spacing:0.06em;margin-bottom:10px}
+.home-title{font-family:var(--font-serif);font-size:30px;font-weight:300;font-style:italic;color:var(--text);line-height:1.3;margin-bottom:8px}
+.home-title span{color:var(--primary)}
+.home-subtitle{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+.home-made{font-size:11px;color:var(--primary);font-style:italic;font-family:var(--font-serif);font-size:14px}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.home-card{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);padding:18px 14px;text-align:center;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;gap:8px}
+.home-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px var(--shadow);border-color:var(--primary-mid)}
+.home-card:active{transform:scale(0.97)}
+.home-card-icon{font-size:26px;line-height:1}
+.home-card-label{font-family:var(--font-serif);font-size:14px;font-style:italic;color:var(--text)}
+.home-card-sub{font-size:10px;color:var(--text3);letter-spacing:0.04em}
 
-        /* ─── COMPONENTS ─── */
-        .weather-card {
-            background: white; margin: 0 20px 20px; padding: 20px; border-radius: 20px; 
-            border: 1px solid var(--border); display: flex; align-items: center; gap: 15px;
-            animation: slideIn 0.5s ease;
-        }
-        .page { display: none; padding: 0 20px 120px; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-        
-        .clothes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .item-card { background: white; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: transform 0.2s; }
-        .item-card:active { transform: scale(0.97); }
-        .item-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
-        .badge { position: absolute; top: 8px; left: 8px; background: rgba(255,255,255,0.85); padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--primary); }
-        
-        .btn-main { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 30px; font-weight: 600; width: 100%; font-size: 16px; margin-top: 10px; box-shadow: 0 4px 15px rgba(212,83,126,0.2); }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        h1 { font-family: var(--font-serif); font-weight: 400; font-size: 32px; }
-        .toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 24px; border-radius: 40px; z-index: 10000; display: none; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop { from { opacity: 0; transform: translate(-50%, 20px); } }
-    </style>
+/* SECTION HEADERS */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:var(--font-serif);font-size:20px;font-weight:300;font-style:italic;color:var(--text)}
+.section-sub{font-size:11px;color:var(--text3);margin-top:2px;font-style:italic}
+
+/* BUTTONS */
+.btn-primary{background:var(--primary);color:white;border:none;padding:9px 18px;border-radius:20px;font-family:var(--font-sans);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em}
+.btn-primary:hover{background:var(--primary-deep);transform:scale(1.02)}
+.btn-soft{background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid);padding:7px 14px;border-radius:20px;font-family:var(--font-sans);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.btn-soft:hover{background:var(--primary-mid)}
+.btn-danger{background:#fff0f0;color:#d44;border:1px solid #fcc;padding:5px 12px;border-radius:20px;font-family:var(--font-sans);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.btn-danger:hover{background:#ffe0e0}
+
+/* PILLS & CHIPS */
+.category-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.category-pills::-webkit-scrollbar{display:none}
+.pill{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card-bg);color:var(--text2);white-space:nowrap;transition:all 0.2s;letter-spacing:0.04em}
+.pill.active{background:var(--primary);color:white;border-color:var(--primary)}
+
+/* CLOTHES GRID */
+.clothes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.clothes-card{background:var(--card-bg);border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;position:relative}
+.clothes-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--shadow)}
+.clothes-card.selected{border:2px solid var(--primary)}
+.clothes-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.clothes-img-placeholder{width:100%;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary-light) 0%,var(--nude) 100%);gap:6px}
+.clothes-img-placeholder .emoji{font-size:28px}
+.clothes-info{padding:8px 10px}
+.clothes-name{font-size:11px;font-weight:500;color:var(--text);line-height:1.3}
+.clothes-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.tag{background:var(--primary-light);color:var(--text2);font-size:9px;padding:2px 7px;border-radius:10px;font-weight:400;letter-spacing:0.03em}
+.fav-btn{position:absolute;top:7px;right:7px;background:rgba(255,255,255,0.88);border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;z-index:2}
+.del-btn{position:absolute;top:7px;left:7px;background:rgba(255,255,255,0.88);border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;z-index:2;opacity:0;transition:opacity 0.2s}
+.clothes-card:hover .del-btn{opacity:1}
+
+/* CLOSET TITLE */
+.closet-title-wrap{margin-bottom:18px}
+.closet-title{font-family:var(--font-serif);font-size:26px;font-style:italic;font-weight:400;color:var(--text);line-height:1.2}
+.closet-title span{color:var(--primary)}
+.closet-byline{font-size:11px;color:var(--text3);margin-top:4px;font-style:italic;letter-spacing:0.03em}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(45,31,40,0.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card-bg);border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:500px;animation:slideUp 0.3s ease;max-height:90vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:var(--font-serif);font-size:20px;font-style:italic;margin-bottom:20px;color:var(--text)}
+.form-group{margin-bottom:16px}
+.form-label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-sans);font-size:13px;color:var(--text);background:var(--input-bg);outline:none;transition:border 0.2s}
+.form-input:focus{border-color:var(--primary-mid)}
+.form-select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:var(--font-sans);font-size:13px;color:var(--text);background:var(--input-bg);outline:none}
+.upload-zone{border:2px dashed var(--primary-mid);border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:var(--primary-light);margin-bottom:8px}
+.upload-zone p{font-size:12px;color:var(--text2);margin-top:6px}
+.upload-preview{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-top:8px}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.modal-btns .btn-primary{flex:1;padding:12px}
+.btn-cancel{flex:1;background:var(--nude);color:var(--text2);border:1px solid var(--border);padding:12px;border-radius:20px;font-family:var(--font-sans);font-size:12px;font-weight:500;cursor:pointer}
+
+/* RANDOMIZER */
+.outfit-display{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:16px}
+.outfit-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.outfit-slot{background:var(--blush);border-radius:12px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.outfit-slot-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,0.9);padding:6px 10px;font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em}
+body.dark .outfit-slot-label{background:rgba(45,31,40,0.9)}
+.outfit-slot img,.outfit-slot .slot-placeholder{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.slot-placeholder{display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,var(--primary-light) 0%,var(--nude) 100%)}
+.shuffle-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary-deep));color:white;border:none;border-radius:20px;font-family:var(--font-serif);font-size:18px;font-style:italic;font-weight:300;cursor:pointer;letter-spacing:0.06em;transition:all 0.3s;margin-bottom:12px}
+.shuffle-btn:hover{transform:scale(1.02);box-shadow:0 6px 20px rgba(212,83,126,0.3)}
+.shuffle-btn.spinning{animation:spinBounce 0.5s ease}
+@keyframes spinBounce{0%{transform:scale(0.95) rotate(-3deg)}50%{transform:scale(1.05) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.filters-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px}
+.filters-row::-webkit-scrollbar{display:none}
+.filter-chip{padding:6px 12px;border-radius:20px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card-bg);color:var(--text2);white-space:nowrap;transition:all 0.2s}
+.filter-chip.active{background:var(--primary-light);border-color:var(--primary-mid);color:var(--primary)}
+
+/* SAVED OUTFITS */
+.saved-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.saved-card{background:var(--card-bg);border-radius:16px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;position:relative}
+.saved-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--shadow)}
+.saved-thumb{display:grid;grid-template-columns:1fr 1fr;gap:2px;height:130px;background:var(--nude)}
+.saved-thumb-item{background:var(--nude);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px}
+.saved-thumb-item img{width:100%;height:100%;object-fit:cover}
+.saved-info{padding:10px 12px}
+.saved-name{font-family:var(--font-serif);font-size:14px;font-style:italic;color:var(--text);margin-bottom:3px}
+.saved-date{font-size:10px;color:var(--text3)}
+.saved-del{position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.9);border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s}
+.saved-card:hover .saved-del{opacity:1}
+
+/* DIARY */
+.diary-entry{background:var(--card-bg);border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;position:relative}
+.diary-date-block{text-align:center;background:var(--primary-light);border-radius:10px;padding:8px 12px;min-width:48px}
+.diary-day{font-family:var(--font-serif);font-size:22px;font-weight:400;color:var(--primary);line-height:1}
+.diary-month{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text2);margin-top:2px}
+.diary-content{flex:1}
+.diary-outfit-name{font-family:var(--font-serif);font-size:15px;font-style:italic;margin-bottom:4px;color:var(--text)}
+.diary-note{font-size:12px;color:var(--text2);line-height:1.5}
+.diary-mood{display:inline-block;background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:10px;font-size:10px;margin-top:6px}
+.diary-thumb{width:52px;height:70px;border-radius:8px;background:var(--nude);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.diary-thumb img{width:100%;height:100%;object-fit:cover}
+.diary-del{position:absolute;top:10px;right:10px;background:transparent;border:none;cursor:pointer;font-size:13px;color:var(--text3);padding:2px;opacity:0;transition:opacity 0.2s}
+.diary-entry:hover .diary-del{opacity:1}
+
+/* TRY-ON */
+.tryon-section{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:14px}
+.tryon-model{width:100%;max-width:220px;margin:0 auto;display:block;border-radius:12px;border:2px solid var(--primary-mid)}
+.tryon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tryon-item{border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+.tryon-item.selected{border-color:var(--primary)}
+.tryon-item img,.ti-ph{width:100%;aspect-ratio:1;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--primary-light)}
+.tryon-overlay-wrap{position:relative;display:inline-block;max-width:220px;margin:0 auto}
+.tryon-overlay-item{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.7;border-radius:12px;pointer-events:none}
+.tryon-tip{background:var(--primary-light);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:12px}
+.tryon-tip strong{color:var(--primary);font-weight:500}
+.hf-result{margin-top:16px;text-align:center}
+.hf-result img{max-width:100%;border-radius:14px;border:2px solid var(--primary-mid)}
+.hf-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px;color:var(--text2);font-size:13px}
+.spinner{width:28px;height:28px;border:3px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:rotate 0.8s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+
+/* WISHLIST */
+.wish-card{background:var(--card-bg);border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;position:relative;cursor:pointer;transition:all 0.2s}
+.wish-card:hover{box-shadow:0 4px 16px var(--shadow)}
+.wish-favicon{width:36px;height:36px;border-radius:10px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}
+.wish-favicon img{width:100%;height:100%;object-fit:cover}
+.wish-content{flex:1;min-width:0}
+.wish-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wish-url{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wish-date{font-size:10px;color:var(--text3);margin-top:4px}
+.wish-del{position:absolute;top:10px;right:10px;background:transparent;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:2px;opacity:0;transition:opacity 0.2s}
+.wish-card:hover .wish-del{opacity:1}
+.wish-add-row{display:flex;gap:8px;margin-bottom:16px}
+.wish-add-row .form-input{flex:1;margin:0}
+
+/* SETTINGS */
+.settings-section{background:var(--card-bg);border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:16px}
+.settings-section-title{font-family:var(--font-serif);font-size:15px;font-style:italic;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-label{font-size:13px;color:var(--text);font-weight:400}
+.setting-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.toggle{width:42px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;border:none;flex-shrink:0}
+.toggle.on{background:var(--primary)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;left:3px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+.toggle.on::after{left:21px}
+.color-swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all 0.2s}
+.color-swatch.active{border-color:var(--text2);transform:scale(1.15)}
+.font-options{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.font-opt{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card-bg);color:var(--text2);cursor:pointer;font-size:12px;transition:all 0.2s}
+.font-opt.active{background:var(--primary);color:white;border-color:var(--primary)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-family:var(--font-serif);font-size:18px;font-style:italic;color:var(--text2);margin-bottom:8px}
+.empty-sub{font-size:12px;line-height:1.6}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:white;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:500;z-index:500;transition:transform 0.3s;letter-spacing:0.04em;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* CONFIRM DIALOG */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(45,31,40,0.5);z-index:300;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--card-bg);border-radius:18px;padding:24px 20px;max-width:320px;width:100%;text-align:center;animation:popIn 0.2s ease}
+@keyframes popIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.confirm-icon{font-size:32px;margin-bottom:12px}
+.confirm-title{font-family:var(--font-serif);font-size:18px;font-style:italic;margin-bottom:8px;color:var(--text)}
+.confirm-msg{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btns .btn-danger{flex:1;padding:10px}
+.confirm-btns .btn-cancel{flex:1;padding:10px}
+
+/* MOOD TAGS */
+.tag-select{display:flex;gap:6px;flex-wrap:wrap}
+.tag-option{padding:5px 12px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:var(--card-bg);color:var(--text2);cursor:pointer;transition:all 0.15s}
+.tag-option.active{background:var(--primary);color:white;border-color:var(--primary)}
+
+/* SUPABASE BANNER */
+.setup-banner{background:linear-gradient(135deg,var(--primary-light),var(--nude));border:1px solid var(--primary-mid);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.7}
+.setup-banner strong{color:var(--primary);font-weight:500}
+.setup-banner a{color:var(--primary);text-decoration:underline}
+
+/* SPLASH SCREEN */
+#splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--primary-light) 0%,var(--cream) 60%,var(--nude) 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity 0.6s ease,visibility 0.6s ease}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo{font-family:var(--font-serif);font-size:44px;font-style:italic;color:var(--text);animation:splashIn 0.8s ease both}
+.splash-logo span{color:var(--primary)}
+.splash-sub{font-size:13px;color:var(--text2);letter-spacing:0.08em;animation:splashIn 0.8s 0.2s ease both}
+.splash-heart{font-size:28px;animation:splashPulse 1.2s 0.4s ease infinite alternate}
+.splash-dots{display:flex;gap:8px;margin-top:8px;animation:splashIn 0.6s 0.5s ease both}
+.splash-dot{width:7px;height:7px;border-radius:50%;background:var(--primary-mid);animation:dotBounce 1s infinite}
+.splash-dot:nth-child(2){animation-delay:0.15s}
+.splash-dot:nth-child(3){animation-delay:0.3s}
+@keyframes splashIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashPulse{from{transform:scale(1)}to{transform:scale(1.2)}}
+@keyframes dotBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* LOGIN SCREEN */
+#login-screen{display:none;position:fixed;inset:0;background:linear-gradient(160deg,var(--primary-light) 0%,var(--cream) 60%,var(--nude) 100%);z-index:900;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.4s ease}
+#login-screen.show{display:flex}
+.login-box{background:var(--card-bg);border-radius:24px;padding:32px 24px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px var(--shadow);border:1px solid var(--border)}
+.login-logo{font-family:var(--font-serif);font-size:32px;font-style:italic;color:var(--text);margin-bottom:4px}
+.login-logo span{color:var(--primary)}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:28px;letter-spacing:0.04em}
+.login-divider{display:flex;align-items:center;gap:10px;margin:18px 0;font-size:11px;color:var(--text3)}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.login-tab-row{display:flex;background:var(--primary-light);border-radius:20px;padding:3px;margin-bottom:20px}
+.login-tab{flex:1;padding:7px;border:none;background:transparent;border-radius:17px;font-family:var(--font-sans);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.login-tab.active{background:var(--white);color:var(--primary);box-shadow:0 1px 6px var(--shadow)}
+.login-error{color:#d44;font-size:12px;margin-top:-8px;margin-bottom:8px;min-height:16px}
+.login-footer{font-size:11px;color:var(--text3);margin-top:18px;font-style:italic;font-family:var(--font-serif)}
+#auth-loading{display:none;align-items:center;justify-content:center;gap:8px;padding:12px;font-size:12px;color:var(--text2)}
+#auth-loading.show{display:flex}
+
+/* USER BAR */
+.user-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3)}
+.user-bar strong{color:var(--text2);font-size:11px;font-weight:500;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--primary);color:white;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0}
+.logout-btn{background:transparent;border:none;cursor:pointer;font-size:11px;color:var(--text3);padding:3px 6px;border-radius:8px;transition:background 0.15s}
+.logout-btn:hover{background:var(--primary-light);color:var(--primary)}
+
+/* WEATHER CARD */
+.weather-card{background:linear-gradient(135deg,var(--primary-light),var(--nude));border:1px solid var(--primary-mid);border-radius:16px;padding:14px 16px;margin-bottom:16px;cursor:pointer;transition:all 0.2s;display:flex;gap:14px;align-items:center}
+.weather-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px var(--shadow)}
+.weather-icon-big{font-size:36px;line-height:1;flex-shrink:0}
+.weather-text{flex:1}
+.weather-title{font-family:var(--font-serif);font-size:15px;font-style:italic;color:var(--text);margin-bottom:3px}
+.weather-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.weather-badge{font-size:10px;font-weight:500;color:var(--primary);background:var(--white);border-radius:20px;padding:3px 10px;display:inline-block;margin-top:5px}
+
+/* DIARY ITEM SELECTOR (in diary modal) */
+.diary-item-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;max-height:160px;overflow-y:auto;padding-right:2px}
+.diary-item-chip{border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all 0.18s;position:relative}
+.diary-item-chip.active{border-color:var(--primary)}
+.diary-item-chip img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.diary-item-chip .chip-ph{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--primary-light)}
+.diary-item-chip .chip-check{display:none;position:absolute;top:2px;right:2px;background:var(--primary);color:white;border-radius:50%;width:16px;height:16px;font-size:9px;align-items:center;justify-content:center}
+.diary-item-chip.active .chip-check{display:flex}
+.diary-selected-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;min-height:20px}
+.diary-selected-tag{background:var(--primary-light);color:var(--primary);font-size:10px;padding:3px 9px;border-radius:12px;border:1px solid var(--primary-mid)}
+
+/* SAVE SPARKLE ANIMATION */
+@keyframes sparkle{0%{transform:scale(0) rotate(0deg);opacity:1}100%{transform:scale(1.8) rotate(45deg);opacity:0}}
+.sparkle{position:fixed;pointer-events:none;font-size:22px;animation:sparkle 0.7s ease forwards;z-index:999}
+
+/* CARD TAP FEEDBACK */
+.clothes-card:active{transform:scale(0.96)!important}
+.home-card:active{transform:scale(0.97)!important}
+
+/* LOADING STATE */
+.page-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:14px;color:var(--text3)}
+.page-loading .spinner{width:32px;height:32px;border:3px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:rotate 0.8s linear infinite}
+</style>
 </head>
 <body>
 
-    <div id="toast" class="toast">Saved 💕</div>
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-logo"><span>✦</span> Emma's Closet</div>
+  <div class="splash-sub">Welcome back, Emma 💕</div>
+  <div class="splash-heart">🌸</div>
+  <div class="splash-dots">
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+  </div>
+</div>
 
-    <div id="splash-screen">
-        <div class="splash-heart">💖</div>
-        <h2 style="font-family: var(--font-serif); margin-top: 20px;">Welcome back, Emma 💕</h2>
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo"><span>✦</span> Emma's Closet</div>
+    <div class="login-sub">Built by Brandon with love 🌸</div>
+    <div class="login-tab-row">
+      <button class="login-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+      <button class="login-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
     </div>
-
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h1 style="margin-bottom: 24px;">Emma's Closet</h1>
-            <input type="email" id="auth-email" placeholder="Email">
-            <input type="password" id="auth-password" placeholder="Password">
-            <button class="btn-main" onclick="handleLogin()">Enter Closet ✨</button>
-        </div>
+    <div class="form-group" style="text-align:left">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="auth-email" placeholder="emma@example.com" autocomplete="email">
     </div>
-
-    <div id="app-shell">
-        <div id="weather-section"></div>
-
-        <div id="page-closet" class="page active">
-            <h1>Your Closet ✨</h1>
-            <p style="color: var(--text-light);">"What are we wearing today?"</p>
-            <div id="closet-list" class="clothes-grid"></div>
-        </div>
-
-        <div id="page-builder" class="page">
-            <h1>Outfit Builder</h1>
-            <p style="color: var(--text-light);">Let's build your outfit ✨</p>
-            <div id="builder-container" style="margin-top:20px;">
-                <p style="text-align:center; padding:40px; color:var(--text-light); border: 2px dashed var(--border); border-radius:20px;">Select items to start styling...</p>
-            </div>
-            <button class="btn-main" onclick="showToast()">Save Look 💕</button>
-        </div>
-
-        <div id="page-diary" class="page"><h1>Outfit Diary</h1></div>
-        <div id="page-wishlist" class="page"><h1>Wishlist</h1></div>
-        <div id="page-settings" class="page">
-            <h1>Settings</h1>
-            <button class="btn-main" style="background:#7a5a6a; margin-top:40px;" onclick="handleLogout()">Sign Out</button>
-        </div>
-
-        <nav class="bottom-nav">
-            <button class="nav-item active" onclick="navTo('closet', this)">
-                <span class="nav-icon">👗</span><span>Closet</span>
-            </button>
-            <button class="nav-item" onclick="navTo('builder', this)">
-                <span class="nav-icon">✨</span><span>Build</span>
-            </button>
-            <button class="nav-item" onclick="navTo('diary', this)">
-                <span class="nav-icon">📖</span><span>Diary</span>
-            </button>
-            <button class="nav-item" onclick="navTo('wishlist', this)">
-                <span class="nav-icon">💖</span><span>Wish</span>
-            </button>
-            <button class="nav-item" onclick="navTo('settings', this)">
-                <span class="nav-icon">⚙️</span><span>Settings</span>
-            </button>
-        </nav>
+    <div class="form-group" style="text-align:left" id="auth-pass-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="auth-password" placeholder="Your password" autocomplete="current-password">
     </div>
+    <div class="login-error" id="auth-error"></div>
+    <div id="auth-loading"><div class="spinner"></div> Signing in…</div>
+    <button class="btn-primary" style="width:100%;padding:13px;font-size:13px" id="auth-submit-btn" onclick="handleAuth()">Sign In</button>
+    <div class="login-divider">or</div>
+    <button class="btn-soft" style="width:100%;padding:12px;font-size:12px" onclick="handleMagicLink()">✉️ Send Magic Link</button>
+    <div class="login-footer">Your personal digital wardrobe</div>
+  </div>
+</div>
 
-    <script>
-        // SUPABASE CONFIG
-        const SB_URL = "https://ujcsgpayqbmqofemdthq.supabase.co";
-        const SB_KEY = "sb_publishable_X3cQYcOSjb4t1GyP2QSuIg_oK2MbOCR";
-        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="logo"><span>✦</span> Emma's Closet</div>
+    <div class="header-sub">Built by Brandon, Your Digital Wardrobe</div>
+  </div>
+  <div class="header-right">
+    <div class="user-bar" id="user-bar" style="display:none">
+      <div class="user-avatar" id="user-avatar">E</div>
+      <button class="logout-btn" onclick="handleLogout()" title="Sign out">↩</button>
+    </div>
+    <button class="btn-soft" style="font-size:10px;padding:6px 12px" onclick="showPage('home',null)">🏠</button>
+    <button class="btn-primary" onclick="openUploadModal()" style="font-size:11px;padding:7px 14px">+ Add</button>
+  </div>
+</div>
 
-        // SERVICE WORKER (PWA)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-            });
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+  <button class="nav-btn" onclick="showPage('home',this)"><span class="nav-icon">🏠</span>Home</button>
+  <button class="nav-btn" onclick="showPage('closet',this)"><span class="nav-icon">🗂</span>Closet</button>
+  <button class="nav-btn" onclick="showPage('randomizer',this)"><span class="nav-icon">✨</span>Shuffle</button>
+  <button class="nav-btn" onclick="showPage('saved',this)"><span class="nav-icon">🌸</span>Saved</button>
+  <button class="nav-btn" onclick="showPage('diary',this)"><span class="nav-icon">📖</span>Diary</button>
+  <button class="nav-btn" onclick="showPage('wishlist',this)"><span class="nav-icon">💖</span>Wishlist</button>
+  <button class="nav-btn" onclick="showPage('tryon',this)"><span class="nav-icon">👗</span>Try-On</button>
+  <button class="nav-btn" onclick="showPage('settings',this)"><span class="nav-icon">⚙️</span>Settings</button>
+</nav>
+
+<!-- ══════════ HOME PAGE ══════════ -->
+<div id="page-home" class="page active">
+  <div class="home-hero">
+    <div class="home-greeting">✦ Welcome back, Emma ✦</div>
+    <div class="home-title">Welcome to your closet.<br><span>Made by your loving</span><br>boyfriend Brandon 💕</div>
+    <div class="home-subtitle">Your personal digital wardrobe,<br>styled with love just for you.</div>
+    <div class="home-made">— with love, B 🌸</div>
+  </div>
+
+  <!-- WEATHER RECOMMENDATION CARD -->
+  <div id="weather-card" class="weather-card" style="display:none" onclick="showPage('randomizer',null)">
+    <div class="weather-icon-big" id="weather-icon">🌤</div>
+    <div class="weather-text">
+      <div class="weather-title">Today's Outfit 💕</div>
+      <div class="weather-desc" id="weather-desc">Checking weather…</div>
+      <div class="weather-badge" id="weather-badge">✦ Tap to shuffle</div>
+    </div>
+  </div>
+  <div class="home-grid">
+    <div class="home-card" onclick="showPage('closet',null)">
+      <div class="home-card-icon">🗂</div>
+      <div class="home-card-label">My Closet</div>
+      <div class="home-card-sub">Browse wardrobe</div>
+    </div>
+    <div class="home-card" onclick="showPage('randomizer',null)">
+      <div class="home-card-icon">✨</div>
+      <div class="home-card-label">Outfit Shuffle</div>
+      <div class="home-card-sub">Random outfit</div>
+    </div>
+    <div class="home-card" onclick="showPage('saved',null)">
+      <div class="home-card-icon">🌸</div>
+      <div class="home-card-label">Saved Looks</div>
+      <div class="home-card-sub">Favourite outfits</div>
+    </div>
+    <div class="home-card" onclick="showPage('diary',null)">
+      <div class="home-card-icon">📖</div>
+      <div class="home-card-label">Outfit Diary</div>
+      <div class="home-card-sub">Daily log</div>
+    </div>
+    <div class="home-card" onclick="showPage('wishlist',null)">
+      <div class="home-card-icon">💖</div>
+      <div class="home-card-label">Wishlist</div>
+      <div class="home-card-sub">Items to get</div>
+    </div>
+    <div class="home-card" onclick="showPage('tryon',null)">
+      <div class="home-card-icon">👗</div>
+      <div class="home-card-label">Virtual Try-On</div>
+      <div class="home-card-sub">Preview looks</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CLOSET PAGE ══════════ -->
+<div id="page-closet" class="page">
+  <div class="closet-title-wrap">
+    <div class="closet-title"><span>Emma's</span> Closet ✦</div>
+    <div class="closet-byline">Built by Brandon, Your Digital Wardrobe</div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <span id="item-count" style="font-size:12px;color:var(--text3)">0 pieces</span>
+    <button class="btn-primary" onclick="openUploadModal()" style="font-size:11px;padding:7px 14px">+ Add Item</button>
+  </div>
+  <div class="category-pills" id="category-pills">
+    <div class="pill active" onclick="filterCategory('all',this)">All</div>
+    <div class="pill" onclick="filterCategory('tops',this)">Tops</div>
+    <div class="pill" onclick="filterCategory('bottoms',this)">Bottoms</div>
+    <div class="pill" onclick="filterCategory('jackets',this)">Jackets</div>
+    <div class="pill" onclick="filterCategory('hoodies',this)">Hoodies</div>
+    <div class="pill" onclick="filterCategory('shoes',this)">Shoes</div>
+    <div class="pill" onclick="filterCategory('accessories',this)">Accessories</div>
+  </div>
+  <div class="clothes-grid" id="clothes-grid">
+    <div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">👗</div>
+      <div class="empty-title">Your closet is empty</div>
+      <div class="empty-sub">Tap <strong>+ Add Item</strong> to start building<br>your digital wardrobe</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RANDOMIZER PAGE ══════════ -->
+<div id="page-randomizer" class="page">
+  <div class="section-title" style="margin-bottom:14px">Outfit Shuffle ✨</div>
+  <div class="filters-row">
+    <div class="filter-chip" onclick="toggleFilter(this)">Casual</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Date Night</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Work</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Party</div>
+    <div class="filter-chip" onclick="toggleFilter(this)">Outdoors</div>
+  </div>
+  <div class="outfit-display">
+    <div class="outfit-row">
+      <div class="outfit-slot" id="slot-top"><div class="slot-placeholder" style="aspect-ratio:3/4">👕</div><div class="outfit-slot-label">Top</div></div>
+      <div class="outfit-slot" id="slot-bottom"><div class="slot-placeholder" style="aspect-ratio:3/4">👖</div><div class="outfit-slot-label">Bottom</div></div>
+    </div>
+    <div class="outfit-row">
+      <div class="outfit-slot" id="slot-shoes"><div class="slot-placeholder" style="aspect-ratio:3/4">👟</div><div class="outfit-slot-label">Shoes</div></div>
+      <div class="outfit-slot" id="slot-outer"><div class="slot-placeholder" style="aspect-ratio:3/4">🧥</div><div class="outfit-slot-label">Outerwear</div></div>
+    </div>
+  </div>
+  <button class="shuffle-btn" id="shuffle-btn" onclick="shuffleOutfit()">✦ Shuffle My Outfit</button>
+  <div style="display:flex;gap:8px">
+    <button class="btn-soft" style="flex:1" onclick="saveCurrentOutfit()">🌸 Save This Look</button>
+    <button class="btn-soft" style="flex:1" onclick="logToday()">📖 Log to Diary</button>
+  </div>
+</div>
+
+<!-- ══════════ SAVED PAGE ══════════ -->
+<div id="page-saved" class="page">
+  <div class="section-header">
+    <div class="section-title">Saved Looks</div>
+  </div>
+  <div class="saved-grid" id="saved-grid">
+    <div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">🌸</div>
+      <div class="empty-title">No saved outfits yet</div>
+      <div class="empty-sub">Shuffle an outfit and save it here</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DIARY PAGE ══════════ -->
+<div id="page-diary" class="page">
+  <div class="section-header">
+    <div class="section-title">Outfit Diary</div>
+    <button class="btn-soft" onclick="openDiaryModal()">+ Log Day</button>
+  </div>
+  <div id="diary-list">
+    <div class="empty-state">
+      <div class="empty-icon">📖</div>
+      <div class="empty-title">Your story starts here</div>
+      <div class="empty-sub">Log your outfits and build a<br>beautiful fashion diary</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ WISHLIST PAGE ══════════ -->
+<div id="page-wishlist" class="page">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Wishlist 💖</div>
+      <div class="section-sub">Things Emma wants — saved by Brandon</div>
+    </div>
+  </div>
+  <div class="wish-add-row">
+    <input type="text" class="form-input" id="wish-url-input" placeholder="Paste a product URL here…" style="font-size:12px">
+    <button class="btn-primary" style="font-size:11px;padding:9px 14px;white-space:nowrap" onclick="addWishItem()">+ Save</button>
+  </div>
+  <div id="wishlist-items">
+    <div class="empty-state">
+      <div class="empty-icon">💖</div>
+      <div class="empty-title">Nothing on the wishlist</div>
+      <div class="empty-sub">Paste a product link above<br>to save it here</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TRY-ON PAGE ══════════ -->
+<div id="page-tryon" class="page">
+  <div class="section-title" style="margin-bottom:14px">Virtual Try-On 👗</div>
+  <div class="tryon-section">
+    <div class="form-label">Model Photo</div>
+    <div class="upload-zone" onclick="document.getElementById('model-upload').click()">
+      <div style="font-size:28px">🧍‍♀️</div>
+      <p>Tap to upload a full-body photo</p>
+      <p style="font-size:10px;color:var(--text3);margin-top:4px">Best with a plain background</p>
+    </div>
+    <input type="file" id="model-upload" accept="image/*" style="display:none" onchange="loadModelPhoto(event)">
+    <div id="model-preview" style="display:none;margin-top:12px;text-align:center">
+      <div class="tryon-overlay-wrap" id="tryon-overlay-wrap">
+        <img id="model-img" class="tryon-model" src="" alt="Model">
+      </div>
+    </div>
+  </div>
+  <div class="tryon-section">
+    <div class="form-label">Select Item to Preview</div>
+    <div class="tryon-grid" id="tryon-grid">
+      <div class="empty-state" style="grid-column:1/-1;padding:20px">
+        <div style="font-size:12px;color:var(--text3)">Add items to your closet first</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn-soft" style="flex:1" onclick="overlaySelected()">✦ Preview Overlay</button>
+      <button class="btn-soft" style="flex:1" onclick="tryHuggingFace()">🤗 AI Try-On</button>
+    </div>
+    <div id="hf-result-area"></div>
+  </div>
+  <div class="tryon-tip">
+    <strong>✦ How it works:</strong><br>
+    <strong>Preview Overlay</strong> — instantly layers selected clothing images over your photo.<br>
+    <strong>AI Try-On</strong> — sends your photo + garment to Hugging Face's IDM-VTON model (free). Results take ~30–60 seconds. <a href="https://huggingface.co/spaces/yisol/IDM-VTON" target="_blank" style="color:var(--primary)">Open the full HF Space →</a>
+  </div>
+</div>
+
+<!-- ══════════ SETTINGS PAGE ══════════ -->
+<div id="page-settings" class="page">
+  <div class="section-title" style="margin-bottom:20px">Settings ⚙️</div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Appearance</div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Dark Mode</div>
+        <div class="setting-sub">Easy on the eyes at night</div>
+      </div>
+      <button class="toggle" id="dark-toggle" onclick="toggleDarkMode()"></button>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Color Theme</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Choose a primary color</div>
+    <div class="color-swatches" id="color-swatches">
+      <div class="color-swatch active" style="background:#d4537e" data-color="#d4537e,#f9e8ef,#f2c8d9,#c44070" onclick="setColor(this)"></div>
+      <div class="color-swatch" style="background:#7c5cbf" data-color="#7c5cbf,#ede8f9,#d5c8f2,#6344a4" onclick="setColor(this)"></div>
+      <div class="color-swatch" style="background:#3b8f7a" data-color="#3b8f7a,#e8f5f1,#c8ede6,#2d7062" onclick="setColor(this)"></div>
+      <div class="color-swatch" style="background:#d4793e" data-color="#d4793e,#fdf0e8,#f7d5ba,#b8622e" onclick="setColor(this)"></div>
+      <div class="color-swatch" style="background:#5b8fd4" data-color="#5b8fd4,#e8f0fb,#c8d8f5,#4470b8" onclick="setColor(this)"></div>
+      <div class="color-swatch" style="background:#c05e8d" data-color="#c05e8d,#f9e5ef,#f0c2d8,#a04878" onclick="setColor(this)"></div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Font Style</div>
+    <div class="font-options" id="font-options">
+      <div class="font-opt active" data-font="'DM Sans',sans-serif" onclick="setFont(this)">DM Sans</div>
+      <div class="font-opt" data-font="'Georgia',serif" onclick="setFont(this)" style="font-family:Georgia">Georgia</div>
+      <div class="font-opt" data-font="'Trebuchet MS',sans-serif" onclick="setFont(this)" style="font-family:'Trebuchet MS'">Trebuchet</div>
+      <div class="font-opt" data-font="'Courier New',monospace" onclick="setFont(this)" style="font-family:'Courier New'">Courier</div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Supabase Sync</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px">
+      Connect your Supabase project to persist data across devices. Create a free project at <a href="https://supabase.com" target="_blank" style="color:var(--primary)">supabase.com</a>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Project URL</label>
+      <input type="text" class="form-input" id="sb-url" placeholder="https://xxxx.supabase.co" style="font-size:12px">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Anon Key</label>
+      <input type="text" class="form-input" id="sb-key" placeholder="eyJ..." style="font-size:12px">
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="saveSupabaseConfig()">Save & Connect</button>
+    <div id="sb-status" style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px"></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:14px;line-height:1.6;background:var(--blush);border-radius:10px;padding:12px">
+      <strong style="color:var(--text2)">Required Supabase Tables:</strong><br>
+      • <code>clothes</code> (id, name, category, tags, img_url, fav, created_at)<br>
+      • <code>saved_outfits</code> (id, name, outfit_json, created_at)<br>
+      • <code>diary_entries</code> (id, name, notes, mood, day, month, outfit_json, created_at)<br>
+      • <code>wishlist</code> (id, url, title, favicon, created_at)
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Data</div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Clear All Data</div>
+        <div class="setting-sub">Remove everything locally</div>
+      </div>
+      <button class="btn-danger" onclick="confirmClearAll()">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="upload-modal">
+  <div class="modal">
+    <div class="modal-title">Add to Closet ✦</div>
+    <div class="form-group">
+      <div class="upload-zone" onclick="document.getElementById('item-upload').click()">
+        <div style="font-size:28px">📸</div>
+        <p>Tap to add a photo</p>
+      </div>
+      <input type="file" id="item-upload" accept="image/*" style="display:none" onchange="previewItem(event)">
+      <img id="item-preview" class="upload-preview" style="display:none">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Item Name</label>
+      <input type="text" class="form-input" id="item-name" placeholder="e.g. Pink satin blouse">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="item-category">
+        <option value="tops">Top / Shirt</option>
+        <option value="bottoms">Bottom / Pants</option>
+        <option value="jackets">Jacket / Coat</option>
+        <option value="hoodies">Hoodie / Sweatshirt</option>
+        <option value="shoes">Shoes</option>
+        <option value="accessories">Accessories</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags (comma-separated)</label>
+      <input type="text" class="form-input" id="item-tags" placeholder="e.g. pink, casual, summer">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('upload-modal')">Cancel</button>
+      <button class="btn-primary" onclick="addItem()">Add to Closet</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIARY MODAL -->
+<div class="modal-overlay" id="diary-modal">
+  <div class="modal">
+    <div class="modal-title">Log Today ✦</div>
+    <div class="form-group">
+      <label class="form-label">Outfit Name</label>
+      <input type="text" class="form-input" id="diary-outfit-name" placeholder="e.g. Casual Tuesday">
+    </div>
+    <div class="form-group">
+      <label class="form-label">What did you wear? <span style="color:var(--text3);font-weight:400;text-transform:none">(tap items)</span></label>
+      <div class="diary-item-grid" id="diary-item-grid"></div>
+      <div class="diary-outfit-preview" id="diary-outfit-preview"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" class="form-input" id="diary-notes" placeholder="How'd you feel? Where'd you go?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mood</label>
+      <div class="tag-select" id="mood-select">
+        <div class="tag-option" onclick="selectMood(this,'✨ Glowing')">✨ Glowing</div>
+        <div class="tag-option" onclick="selectMood(this,'🌸 Cute')">🌸 Cute</div>
+        <div class="tag-option" onclick="selectMood(this,'🔥 Confident')">🔥 Confident</div>
+        <div class="tag-option" onclick="selectMood(this,'😌 Comfy')">😌 Comfy</div>
+        <div class="tag-option" onclick="selectMood(this,'💫 Chic')">💫 Chic</div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('diary-modal')">Cancel</button>
+      <button class="btn-primary" onclick="addDiaryEntry()">Log It</button>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE OUTFIT MODAL -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal">
+    <div class="modal-title">Name This Look ✦</div>
+    <div class="form-group">
+      <label class="form-label">Outfit Name</label>
+      <input type="text" class="form-input" id="outfit-name" placeholder="e.g. Date Night, Casual Friday">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('save-modal')">Cancel</button>
+      <button class="btn-primary" onclick="confirmSaveOutfit()">Save Look</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-dialog">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon">🗑️</div>
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-msg" id="confirm-msg">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-danger" id="confirm-action-btn" onclick="">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// SUPABASE CONFIG — pulled from localStorage after login
+// ══════════════════════════════════════════════════════════
+const SB_URL = localStorage.getItem('emma_sb_url') || '';
+const SB_KEY = localStorage.getItem('emma_sb_key') || '';
+
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let clothes = [];
+let savedOutfits = [];
+let diaryEntries = [];
+let wishlistItems = [];
+let currentFilter = 'all';
+let currentOutfit = {};
+let selectedMood = '';
+let selectedTryOnItem = null;
+let diarySelectedItems = [];
+let currentUser = null;
+let sbUrl = '', sbKey = '';
+
+const EMOJIS = {tops:'👕',bottoms:'👖',jackets:'🧥',hoodies:'🧸',shoes:'👟',accessories:'💍'};
+
+// ══════════════════════════════════════════════════════════
+// SUPABASE HELPERS
+// ══════════════════════════════════════════════════════════
+async function sbFetch(path, method = 'GET', body = null, extra = {}) {
+  if (!sbUrl || !sbKey) return null;
+  const headers = {
+    'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`,
+    'Content-Type': 'application/json', ...extra
+  };
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(sbUrl + path, opts);
+    if (!res.ok) { const t = await res.text(); console.warn('SB error', res.status, t); return null; }
+    if (method === 'GET') return await res.json();
+    return true;
+  } catch(e) { console.warn('SB fetch failed', e); return null; }
+}
+
+async function sbInsert(table, data) {
+  return sbFetch(`/rest/v1/${table}`, 'POST', data, {'Prefer': 'return=representation'});
+}
+async function sbSelect(table, filter = '') {
+  return sbFetch(`/rest/v1/${table}?${filter}&order=created_at.desc`, 'GET');
+}
+async function sbDelete(table, id) {
+  return sbFetch(`/rest/v1/${table}?id=eq.${id}`, 'DELETE');
+}
+async function sbUpdate(table, id, data) {
+  return sbFetch(`/rest/v1/${table}?id=eq.${id}`, 'PATCH', data, {'Prefer': 'return=minimal'});
+}
+
+// ══════════════════════════════════════════════════════════
+// SUPABASE AUTH
+// ══════════════════════════════════════════════════════════
+async function checkSession() {
+  if (!sbUrl || !sbKey) return null;
+  // Try stored session token
+  const token = localStorage.getItem('emma_access_token');
+  const refresh = localStorage.getItem('emma_refresh_token');
+  if (!token) return null;
+  try {
+    const res = await fetch(`${sbUrl}/auth/v1/user`, {
+      headers: { 'apikey': sbKey, 'Authorization': `Bearer ${token}` }
+    });
+    if (res.ok) {
+      const user = await res.json();
+      return { user, access_token: token };
+    }
+    // Try refresh
+    if (refresh) {
+      const rRes = await fetch(`${sbUrl}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refresh })
+      });
+      if (rRes.ok) {
+        const data = await rRes.json();
+        if (data.access_token) {
+          localStorage.setItem('emma_access_token', data.access_token);
+          if (data.refresh_token) localStorage.setItem('emma_refresh_token', data.refresh_token);
+          return data;
         }
+      }
+    }
+  } catch(e) {}
+  return null;
+}
 
-        // 1. Snappy Splash Logic
-        async function checkSession() {
-            const minWait = new Promise(res => setTimeout(res, 900)); // ~1 second
-            const { data: { session } } = await _supabase.auth.getSession();
-            await minWait;
+async function signIn(email, password) {
+  const res = await fetch(`${sbUrl}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || 'Sign in failed');
+  return data;
+}
 
-            const splash = document.getElementById('splash-screen');
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-                if (session) { showApp(); } else { showAuth(); }
-            }, 500);
-        }
+async function signUp(email, password) {
+  const res = await fetch(`${sbUrl}/auth/v1/signup`, {
+    method: 'POST',
+    headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || 'Sign up failed');
+  return data;
+}
 
-        // 2. Auth Actions
-        async function handleLogin() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const { error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) { alert("Error: " + error.message); } else { showApp(); }
-        }
+async function sendMagicLink(email) {
+  const res = await fetch(`${sbUrl}/auth/v1/magiclink`, {
+    method: 'POST',
+    headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  if (!res.ok) { const d = await res.json(); throw new Error(d.error_description || 'Failed'); }
+  return true;
+}
 
-        async function handleLogout() {
-            await _supabase.auth.signOut();
-            location.reload();
-        }
+function setSession(data) {
+  if (data?.access_token) localStorage.setItem('emma_access_token', data.access_token);
+  if (data?.refresh_token) localStorage.setItem('emma_refresh_token', data.refresh_token);
+  currentUser = data?.user || data;
+  // Override sbFetch to use user JWT
+  const token = data?.access_token || localStorage.getItem('emma_access_token');
+  if (token) {
+    // monkey-patch the Authorization header used in sbFetch
+    window.__sb_token = token;
+  }
+}
 
-        function showApp() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-shell').style.display = 'block';
-            loadCloset();
-            getWeather();
-        }
+function clearSession() {
+  localStorage.removeItem('emma_access_token');
+  localStorage.removeItem('emma_refresh_token');
+  currentUser = null;
+  window.__sb_token = null;
+}
 
-        function showAuth() {
-            document.getElementById('auth-screen').style.display = 'flex';
-        }
+// Override sbFetch to use user token when available
+const _origSbFetch = sbFetch;
+async function sbFetch(path, method = 'GET', body = null, extra = {}) {
+  if (!sbUrl || !sbKey) return null;
+  const token = window.__sb_token || sbKey;
+  const headers = {
+    'apikey': sbKey, 'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json', ...extra
+  };
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(sbUrl + path, opts);
+    if (!res.ok) { const t = await res.text(); console.warn('SB error', res.status, t); return null; }
+    if (method === 'GET') return await res.json();
+    return true;
+  } catch(e) { console.warn('SB fetch failed', e); return null; }
+}
 
-        // 3. Navigation
-        function navTo(pageId, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            el.classList.add('active');
-            window.scrollTo(0,0);
-        }
+// ══════════════════════════════════════════════════════════
+// AUTH UI
+// ══════════════════════════════════════════════════════════
+let authTab = 'signin';
 
-        // 4. Weather Logic (7Timer API - Free)
-        async function getWeather() {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const res = await fetch(`https://www.7timer.info/bin/api.pl?lon=${pos.coords.longitude}&lat=${pos.coords.latitude}&product=civil&output=json`);
-                    const data = await res.json();
-                    const temp = data.dataseries[0].temp2m;
-                    let advice = temp < 15 ? "Layers & jackets recommended 🧥" : "Perfect for something light! ☀️";
-                    document.getElementById('weather-section').innerHTML = `
-                        <div class="weather-card">
-                            <div style="font-size: 28px;">🌤️</div>
-                            <div>
-                                <div style="font-weight:600; font-size:13px;">Today's Outfit 💕</div>
-                                <div style="font-size:12px; color:var(--text-light)">${temp}°C — ${advice}</div>
-                            </div>
-                        </div>`;
-                } catch(e) { console.log("Weather failed", e); }
-            });
-        }
+function switchAuthTab(tab) {
+  authTab = tab;
+  document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('auth-submit-btn').textContent = tab === 'signin' ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-error').textContent = '';
+}
 
-        // 5. Data Loading
-        async function loadCloset() {
-            const { data: items, error } = await _supabase.from('clothes').select('*');
-            if (error) return console.log(error);
-            const list = document.getElementById('closet-list');
-            list.innerHTML = items.map(item => `
-                <div class="item-card">
-                    <img src="${item.image_url}" class="item-img">
-                    <div class="badge">${item.category}</div>
-                    <div style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:12px; font-weight:500;">${item.name}</span>
-                        <span>${item.favorite ? '❤️' : '🤍'}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+async function handleAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errorEl = document.getElementById('auth-error');
+  const loadingEl = document.getElementById('auth-loading');
+  if (!email) { errorEl.textContent = 'Please enter your email.'; return; }
+  if (!password) { errorEl.textContent = 'Please enter a password.'; return; }
+  if (!sbUrl || !sbKey) { errorEl.textContent = 'Supabase not configured. Check Settings first.'; return; }
+  errorEl.textContent = '';
+  document.getElementById('auth-submit-btn').style.display = 'none';
+  loadingEl.classList.add('show');
+  try {
+    let data;
+    if (authTab === 'signin') data = await signIn(email, password);
+    else data = await signUp(email, password);
+    setSession(data);
+    loadingEl.classList.remove('show');
+    document.getElementById('auth-submit-btn').style.display = '';
+    document.getElementById('login-screen').classList.remove('show');
+    onLoggedIn();
+  } catch(e) {
+    loadingEl.classList.remove('show');
+    document.getElementById('auth-submit-btn').style.display = '';
+    errorEl.textContent = e.message;
+  }
+}
 
-        function showToast() {
-            const t = document.getElementById('toast');
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 2000);
-        }
+async function handleMagicLink() {
+  const email = document.getElementById('auth-email').value.trim();
+  const errorEl = document.getElementById('auth-error');
+  if (!email) { errorEl.textContent = 'Enter your email first.'; return; }
+  if (!sbUrl || !sbKey) { errorEl.textContent = 'Supabase not configured. Check Settings first.'; return; }
+  try {
+    await sendMagicLink(email);
+    errorEl.style.color = 'var(--primary)';
+    errorEl.textContent = '✉️ Magic link sent! Check your email.';
+  } catch(e) { errorEl.textContent = e.message; }
+}
 
-        window.onload = checkSession;
-    </script>
+async function handleLogout() {
+  clearSession();
+  clothes = []; savedOutfits = []; diaryEntries = []; wishlistItems = [];
+  document.getElementById('user-bar').style.display = 'none';
+  document.getElementById('login-screen').classList.add('show');
+  showToast('Signed out 👋');
+}
+
+function updateUserBar() {
+  const bar = document.getElementById('user-bar');
+  if (!currentUser) { bar.style.display = 'none'; return; }
+  const email = currentUser.email || '';
+  const initials = email ? email[0].toUpperCase() : 'E';
+  document.getElementById('user-avatar').textContent = initials;
+  bar.style.display = 'flex';
+}
+
+// ══════════════════════════════════════════════════════════
+// LOAD ALL DATA FROM SUPABASE
+// ══════════════════════════════════════════════════════════
+async function loadAllFromSupabase() {
+  showPageLoading('clothes-grid');
+  const uid = currentUser?.id;
+  if (!uid) return;
+  const filter = `user_id=eq.${uid}`;
+
+  const [c, s, d, w] = await Promise.all([
+    sbSelect('clothes', filter),
+    sbSelect('saved_outfits', filter),
+    sbSelect('diary_entries', filter),
+    sbSelect('wishlist', filter)
+  ]);
+
+  if (c) clothes = c.map(row => ({
+    id: row.id, name: row.name, category: row.category,
+    tags: row.tags || [], img: row.img_data || null, fav: row.fav || false,
+    sb_id: row.id
+  }));
+  if (s) savedOutfits = s.map(row => ({
+    id: row.id, name: row.name,
+    date: row.created_at ? new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '',
+    outfit: row.outfit_json ? JSON.parse(row.outfit_json) : {},
+    sb_id: row.id
+  }));
+  if (d) diaryEntries = d.map(row => ({
+    id: row.id, name: row.name, notes: row.notes || '', mood: row.mood || '',
+    day: row.day, month: row.month,
+    items: row.items_json ? JSON.parse(row.items_json) : [],
+    outfit: row.outfit_json ? JSON.parse(row.outfit_json) : null,
+    sb_id: row.id
+  }));
+  if (w) wishlistItems = w.map(row => ({
+    id: row.id, url: row.url, title: row.title,
+    favicon: row.favicon, added: row.added, sb_id: row.id
+  }));
+
+  renderCloset();
+  renderSaved();
+  renderDiary();
+  renderWishlist();
+}
+
+function showPageLoading(containerId) {
+  const el = document.getElementById(containerId);
+  if (el) el.innerHTML = `<div class="page-loading" style="grid-column:1/-1"><div class="spinner"></div><div>Loading…</div></div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// BOOT / INIT
+// ══════════════════════════════════════════════════════════
+async function boot() {
+  // Load Supabase config from localStorage
+  sbUrl = localStorage.getItem('emma_sb_url') || '';
+  sbKey = localStorage.getItem('emma_sb_key') || '';
+
+  // Load UI prefs immediately (no auth needed)
+  loadPrefs();
+
+  // Handle magic link token in URL hash
+  if (window.location.hash.includes('access_token')) {
+    const params = new URLSearchParams(window.location.hash.replace('#', '?'));
+    const token = params.get('access_token');
+    const refresh = params.get('refresh_token');
+    if (token) {
+      localStorage.setItem('emma_access_token', token);
+      if (refresh) localStorage.setItem('emma_refresh_token', refresh);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }
+
+  // Show splash 1.5s then check auth
+  await new Promise(r => setTimeout(r, 1500));
+  document.getElementById('splash').classList.add('hidden');
+
+  if (!sbUrl || !sbKey) {
+    // No Supabase configured — run in local-only mode
+    loadLocal();
+    if (!clothes.length) seedDemo();
+    else { renderCloset(); renderWishlist(); }
+    document.querySelector('.nav-btn').classList.add('active');
+    fetchWeather();
+    return;
+  }
+
+  // Try to restore session
+  const session = await checkSession();
+  if (session) {
+    setSession(session);
+    updateUserBar();
+    await onLoggedIn();
+  } else {
+    // Populate saved Supabase fields in settings
+    if (sbUrl) document.getElementById('sb-url').value = sbUrl;
+    if (sbKey) document.getElementById('sb-key').value = sbKey;
+    document.getElementById('login-screen').classList.add('show');
+  }
+}
+
+async function onLoggedIn() {
+  updateUserBar();
+  await loadAllFromSupabase();
+  document.querySelector('.nav-btn').classList.add('active');
+  fetchWeather();
+}
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-btn').forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+name+"'")) b.classList.add('active');
+    });
+  }
+  if (name === 'tryon') renderTryOn();
+  if (name === 'saved') renderSaved();
+  if (name === 'diary') renderDiary();
+  if (name === 'wishlist') renderWishlist();
+  if (name === 'closet') renderCloset();
+}
+
+// ══════════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════════
+function openUploadModal() { document.getElementById('upload-modal').classList.add('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'upload-modal') {
+    document.getElementById('item-preview').style.display = 'none';
+    document.getElementById('item-name').value = '';
+    document.getElementById('item-tags').value = '';
+    document.getElementById('item-upload').value = '';
+  }
+  if (id === 'diary-modal') {
+    diarySelectedItems = [];
+    document.getElementById('diary-edit-id').value = '';
+  }
+}
+
+let pendingAction = null;
+function showConfirm(icon, title, msg, action) {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-action-btn').onclick = () => { action(); closeConfirm(); };
+  document.getElementById('confirm-dialog').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirm-dialog').classList.remove('open'); }
+
+// ══════════════════════════════════════════════════════════
+// CLOSET — CRUD via Supabase + localStorage fallback
+// ══════════════════════════════════════════════════════════
+function previewItem(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = document.getElementById('item-preview');
+    img.src = ev.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addItem() {
+  const name = document.getElementById('item-name').value.trim();
+  const cat = document.getElementById('item-category').value;
+  const tagsRaw = document.getElementById('item-tags').value;
+  const imgEl = document.getElementById('item-preview');
+  if (!name) { showToast('Please add a name!'); return; }
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+  const imgData = imgEl.style.display !== 'none' ? imgEl.src : null;
+
+  const payload = {
+    name, category: cat, tags, img_data: imgData, fav: false,
+    user_id: currentUser?.id
+  };
+
+  let newId = Date.now();
+  if (currentUser?.id && sbUrl) {
+    const result = await sbInsert('clothes', payload);
+    if (result && result[0]) newId = result[0].id;
+  }
+
+  const item = { id: newId, name, category: cat, tags, img: imgData, fav: false, sb_id: newId };
+  clothes.unshift(item);
+  saveLocal();
+  closeModal('upload-modal');
+  renderCloset();
+  spawnSparkle();
+  showToast('✦ Added to your closet!');
+}
+
+function renderCloset() {
+  const grid = document.getElementById('clothes-grid');
+  const count = document.getElementById('item-count');
+  const filtered = currentFilter === 'all' ? clothes : clothes.filter(c => c.category === currentFilter);
+  count.textContent = clothes.length + ' piece' + (clothes.length !== 1 ? 's' : '');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">👗</div>
+      <div class="empty-title">${currentFilter==='all'?'Your closet is empty':'No '+currentFilter+' yet'}</div>
+      <div class="empty-sub">Tap <strong>+ Add Item</strong> to start building your digital wardrobe</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(item => `
+    <div class="clothes-card" id="card-${item.id}">
+      <button class="del-btn" title="Delete" onclick="deleteItem('${item.id}',event)">🗑️</button>
+      ${item.img ? `<img class="clothes-img" src="${item.img}" alt="${item.name}">` :
+        `<div class="clothes-img-placeholder"><span class="emoji">${EMOJIS[item.category]||'👗'}</span></div>`}
+      <div class="clothes-info">
+        <div class="clothes-name">${item.name}</div>
+        <div class="clothes-tags">${(item.tags||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+      <button class="fav-btn" onclick="toggleFav('${item.id}',event)">${item.fav?'❤️':'🤍'}</button>
+    </div>`).join('');
+}
+
+async function deleteItem(id, e) {
+  e.stopPropagation();
+  const item = clothes.find(c => String(c.id) === String(id));
+  if (!item) return;
+  showConfirm('🗑️', 'Remove this item?', `"${item.name}" will be permanently removed from your closet.`, async () => {
+    clothes = clothes.filter(c => String(c.id) !== String(id));
+    saveLocal();
+    if (currentUser?.id && sbUrl) await sbDelete('clothes', item.sb_id || id);
+    renderCloset();
+    showToast('🌸 Item removed');
+  });
+}
+
+function filterCategory(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.category-pills .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderCloset();
+}
+
+async function toggleFav(id, e) {
+  e.stopPropagation();
+  const item = clothes.find(c => String(c.id) === String(id));
+  if (!item) return;
+  item.fav = !item.fav;
+  saveLocal();
+  if (currentUser?.id && sbUrl) await sbUpdate('clothes', item.sb_id || id, { fav: item.fav });
+  renderCloset();
+}
+
+// ══════════════════════════════════════════════════════════
+// RANDOMIZER
+// ══════════════════════════════════════════════════════════
+function toggleFilter(el) { el.classList.toggle('active'); }
+function getRandom(arr) { return arr.length ? arr[Math.floor(Math.random() * arr.length)] : null; }
+
+function shuffleOutfit() {
+  const btn = document.getElementById('shuffle-btn');
+  btn.classList.add('spinning');
+  setTimeout(() => btn.classList.remove('spinning'), 500);
+  const tops = clothes.filter(c => c.category === 'tops');
+  const bottoms = clothes.filter(c => c.category === 'bottoms');
+  const shoes = clothes.filter(c => c.category === 'shoes');
+  const jackets = clothes.filter(c => c.category === 'jackets' || c.category === 'hoodies');
+  currentOutfit = {
+    top: getRandom(tops), bottom: getRandom(bottoms),
+    shoes: getRandom(shoes), outer: getRandom(jackets)
+  };
+  renderSlot('slot-top', currentOutfit.top, '👕', 'Top');
+  renderSlot('slot-bottom', currentOutfit.bottom, '👖', 'Bottom');
+  renderSlot('slot-shoes', currentOutfit.shoes, '👟', 'Shoes');
+  renderSlot('slot-outer', currentOutfit.outer, '🧥', 'Outerwear');
+  if (!tops.length && !bottoms.length) showToast('Add clothes to your closet first!');
+}
+
+function renderSlot(slotId, item, fallback, label) {
+  const slot = document.getElementById(slotId);
+  if (item) {
+    slot.innerHTML = item.img
+      ? `<img src="${item.img}" alt="${item.name}" style="width:100%;aspect-ratio:3/4;object-fit:cover">`
+      : `<div class="slot-placeholder" style="aspect-ratio:3/4">${EMOJIS[item.category]||fallback}</div>`;
+  } else {
+    slot.innerHTML = `<div class="slot-placeholder" style="aspect-ratio:3/4">${fallback}</div>`;
+  }
+  slot.innerHTML += `<div class="outfit-slot-label">${label}${item?' · '+item.name.substring(0,12):''}</div>`;
+}
+
+function saveCurrentOutfit() {
+  if (!currentOutfit.top && !currentOutfit.bottom) { showToast('Shuffle an outfit first!'); return; }
+  document.getElementById('outfit-name').value = '';
+  document.getElementById('save-modal').classList.add('open');
+}
+
+async function confirmSaveOutfit() {
+  const name = document.getElementById('outfit-name').value.trim() || 'My Look';
+  const outfitJson = JSON.stringify(currentOutfit);
+  const payload = { name, outfit_json: outfitJson, user_id: currentUser?.id };
+  let newId = Date.now();
+  if (currentUser?.id && sbUrl) {
+    const result = await sbInsert('saved_outfits', payload);
+    if (result && result[0]) newId = result[0].id;
+  }
+  const entry = {
+    id: newId, name,
+    date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'}),
+    outfit: currentOutfit,
+    sb_id: newId
+  };
+  savedOutfits.unshift(entry);
+  saveLocal();
+  closeModal('save-modal');
+  renderSaved();
+  spawnSparkle();
+  showToast('🌸 Look saved!');
+}
+
+// ══════════════════════════════════════════════════════════
+// SAVED OUTFITS
+// ══════════════════════════════════════════════════════════
+function renderSaved() {
+  const grid = document.getElementById('saved-grid');
+  if (!savedOutfits.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🌸</div><div class="empty-title">No saved outfits yet</div><div class="empty-sub">Shuffle an outfit and save it here</div></div>`;
+    return;
+  }
+  grid.innerHTML = savedOutfits.map(o => {
+    const outfit = o.outfit || {};
+    const items = [outfit.top, outfit.bottom, outfit.shoes, outfit.outer].filter(Boolean);
+    const thumbs = [0,1,2,3].map(i => {
+      const item = items[i];
+      if (!item) return `<div class="saved-thumb-item">✦</div>`;
+      return item.img ? `<div class="saved-thumb-item"><img src="${item.img}" alt=""></div>` : `<div class="saved-thumb-item">${EMOJIS[item.category]||'✦'}</div>`;
+    }).join('');
+    return `<div class="saved-card">
+      <button class="saved-del" onclick="deleteSaved('${o.id}',event)">🗑️</button>
+      <div class="saved-thumb">${thumbs}</div>
+      <div class="saved-info">
+        <div class="saved-name">${o.name}</div>
+        <div class="saved-date">${o.date}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteSaved(id, e) {
+  e.stopPropagation();
+  const entry = savedOutfits.find(o => String(o.id) === String(id));
+  showConfirm('🌸', 'Remove this look?', 'This saved outfit will be permanently deleted.', async () => {
+    savedOutfits = savedOutfits.filter(o => String(o.id) !== String(id));
+    saveLocal();
+    if (currentUser?.id && sbUrl && entry) await sbDelete('saved_outfits', entry.sb_id || id);
+    renderSaved();
+    showToast('Outfit removed');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// DIARY — with item picker
+// ══════════════════════════════════════════════════════════
+function openDiaryModal(editId = null) {
+  selectedMood = '';
+  diarySelectedItems = [];
+  document.getElementById('diary-outfit-name').value = '';
+  document.getElementById('diary-notes').value = '';
+  document.getElementById('diary-edit-id').value = editId || '';
+  document.querySelectorAll('#mood-select .tag-option').forEach(t => t.classList.remove('active'));
+
+  // If editing, pre-fill
+  if (editId) {
+    const entry = diaryEntries.find(e => String(e.id) === String(editId));
+    if (entry) {
+      document.getElementById('diary-outfit-name').value = entry.name;
+      document.getElementById('diary-notes').value = entry.notes || '';
+      selectedMood = entry.mood || '';
+      diarySelectedItems = entry.items ? [...entry.items] : [];
+      if (entry.mood) {
+        document.querySelectorAll('#mood-select .tag-option').forEach(t => {
+          if (t.textContent.trim() === entry.mood) t.classList.add('active');
+        });
+      }
+      document.getElementById('diary-modal-title').textContent = 'Edit Entry ✦';
+    }
+  } else {
+    document.getElementById('diary-modal-title').textContent = 'Log Today ✦';
+  }
+
+  // Render item picker
+  renderDiaryItemPicker();
+  document.getElementById('diary-modal').classList.add('open');
+}
+
+function renderDiaryItemPicker() {
+  const grid = document.getElementById('diary-item-grid');
+  const tagsRow = document.getElementById('diary-outfit-preview');
+  if (!clothes.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;font-size:11px;color:var(--text3);text-align:center;padding:10px">Add items to your closet first</div>`;
+    return;
+  }
+  grid.innerHTML = clothes.map(item => {
+    const active = diarySelectedItems.some(i => String(i.id) === String(item.id));
+    return `<div class="diary-item-chip ${active?'active':''}" onclick="toggleDiaryItem('${item.id}',this)">
+      ${item.img ? `<img src="${item.img}" alt="${item.name}">` : `<div class="chip-ph">${EMOJIS[item.category]||'👗'}</div>`}
+      <div class="chip-check">✓</div>
+    </div>`;
+  }).join('');
+  renderDiarySelectedTags();
+}
+
+function toggleDiaryItem(id, el) {
+  el.classList.toggle('active');
+  const item = clothes.find(c => String(c.id) === String(id));
+  if (!item) return;
+  const idx = diarySelectedItems.findIndex(i => String(i.id) === String(id));
+  if (idx >= 0) diarySelectedItems.splice(idx, 1);
+  else diarySelectedItems.push(item);
+  renderDiarySelectedTags();
+}
+
+function renderDiarySelectedTags() {
+  const tagsRow = document.getElementById('diary-outfit-preview');
+  if (!tagsRow) return;
+  tagsRow.innerHTML = diarySelectedItems.map(i => `<span class="diary-selected-tag">${EMOJIS[i.category]||''} ${i.name}</span>`).join('');
+}
+
+function selectMood(el, mood) {
+  document.querySelectorAll('#mood-select .tag-option').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  selectedMood = mood;
+}
+
+async function addDiaryEntry() {
+  const name = document.getElementById('diary-outfit-name').value.trim() || 'Today\'s Look';
+  const notes = document.getElementById('diary-notes').value.trim();
+  const editId = document.getElementById('diary-edit-id').value;
+  const now = new Date();
+  const itemsJson = JSON.stringify(diarySelectedItems.map(i => ({id:i.id,name:i.name,category:i.category,img:i.img})));
+  const outfitJson = currentOutfit.top ? JSON.stringify(currentOutfit) : null;
+
+  const payload = {
+    name, notes, mood: selectedMood,
+    day: now.getDate(),
+    month: now.toLocaleDateString('en-US', {month:'short'}),
+    items_json: itemsJson,
+    outfit_json: outfitJson,
+    user_id: currentUser?.id
+  };
+
+  if (editId) {
+    // Update existing
+    if (currentUser?.id && sbUrl) {
+      const entry = diaryEntries.find(e => String(e.id) === String(editId));
+      await sbUpdate('diary_entries', entry?.sb_id || editId, payload);
+    }
+    const idx = diaryEntries.findIndex(e => String(e.id) === String(editId));
+    if (idx >= 0) diaryEntries[idx] = { ...diaryEntries[idx], name, notes, mood: selectedMood, items: diarySelectedItems, day: payload.day, month: payload.month };
+  } else {
+    let newId = Date.now();
+    if (currentUser?.id && sbUrl) {
+      const result = await sbInsert('diary_entries', payload);
+      if (result && result[0]) newId = result[0].id;
+    }
+    diaryEntries.unshift({ id: newId, sb_id: newId, name, notes, mood: selectedMood, day: payload.day, month: payload.month, items: diarySelectedItems, outfit: currentOutfit.top ? {...currentOutfit} : null });
+  }
+
+  saveLocal();
+  closeModal('diary-modal');
+  renderDiary();
+  showToast('📖 Day logged!');
+}
+
+function logToday() {
+  openDiaryModal();
+  document.getElementById('diary-outfit-name').value = 'Today\'s Outfit';
+  if (currentOutfit.top || currentOutfit.bottom) {
+    const auto = [currentOutfit.top, currentOutfit.bottom, currentOutfit.shoes, currentOutfit.outer].filter(Boolean);
+    diarySelectedItems = auto;
+    renderDiarySelectedTags();
+    // Also tick them in picker
+    auto.forEach(item => {
+      const chip = document.querySelector(`.diary-item-chip`);
+      // chips rendered already, try to update
+    });
+    renderDiaryItemPicker();
+  }
+}
+
+function renderDiary() {
+  const list = document.getElementById('diary-list');
+  if (!diaryEntries.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📖</div><div class="empty-title">Your story starts here</div><div class="empty-sub">Log your outfits and build a<br>beautiful fashion diary</div></div>`;
+    return;
+  }
+  list.innerHTML = diaryEntries.map(e => {
+    const items = e.items || [];
+    const thumbItem = items[0] || e.outfit?.top || e.outfit?.bottom;
+    const thumb = thumbItem?.img ? `<img src="${thumbItem.img}" alt="">` : (EMOJIS[thumbItem?.category||'']||'👗');
+    const itemTags = items.slice(0,3).map(i => `<span class="diary-selected-tag">${EMOJIS[i.category]||''} ${i.name}</span>`).join('');
+    return `<div class="diary-entry">
+      <button class="diary-del" onclick="deleteDiary('${e.id}')">✕</button>
+      <button class="diary-del" style="right:28px;opacity:0" class="diary-edit-btn" onclick="openDiaryModal('${e.id}')">✏️</button>
+      <div class="diary-date-block">
+        <div class="diary-day">${e.day}</div>
+        <div class="diary-month">${e.month}</div>
+      </div>
+      <div class="diary-content">
+        <div class="diary-outfit-name">${e.name}</div>
+        ${itemTags ? `<div class="diary-selected-row" style="margin-top:4px">${itemTags}</div>` : ''}
+        ${e.notes?`<div class="diary-note" style="margin-top:4px">${e.notes}</div>`:''}
+        ${e.mood?`<span class="diary-mood">${e.mood}</span>`:''}
+      </div>
+      <div class="diary-thumb">${thumb}</div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteDiary(id) {
+  const entry = diaryEntries.find(e => String(e.id) === String(id));
+  showConfirm('📖', 'Delete diary entry?', 'This diary entry will be permanently removed.', async () => {
+    diaryEntries = diaryEntries.filter(e => String(e.id) !== String(id));
+    saveLocal();
+    if (currentUser?.id && sbUrl && entry) await sbDelete('diary_entries', entry.sb_id || id);
+    renderDiary();
+    showToast('Diary entry removed');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// WISHLIST
+// ══════════════════════════════════════════════════════════
+async function addWishItem() {
+  const input = document.getElementById('wish-url-input');
+  const url = input.value.trim();
+  if (!url) { showToast('Paste a URL first!'); return; }
+  if (!url.startsWith('http')) { showToast('Please enter a valid URL'); return; }
+  const hostname = (() => { try { return new URL(url).hostname.replace('www.',''); } catch(e) { return 'link'; } })();
+  const favicon = `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`;
+  const added = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  const payload = { url, title: hostname, favicon, added, user_id: currentUser?.id };
+  let newId = Date.now();
+  if (currentUser?.id && sbUrl) {
+    const result = await sbInsert('wishlist', payload);
+    if (result && result[0]) newId = result[0].id;
+  }
+  wishlistItems.unshift({ id: newId, sb_id: newId, url, title: hostname, favicon, added });
+  saveLocal();
+  input.value = '';
+  renderWishlist();
+  showToast('💖 Added to wishlist!');
+}
+
+function renderWishlist() {
+  const list = document.getElementById('wishlist-items');
+  if (!wishlistItems.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">💖</div><div class="empty-title">Nothing on the wishlist</div><div class="empty-sub">Paste a product link above<br>to save it here</div></div>`;
+    return;
+  }
+  list.innerHTML = wishlistItems.map(w => `
+    <div class="wish-card" onclick="window.open('${w.url}','_blank')">
+      <button class="wish-del" onclick="deleteWish('${w.id}',event)">✕</button>
+      <div class="wish-favicon">
+        <img src="${w.favicon}" alt="" onerror="this.parentElement.textContent='🛍️'">
+      </div>
+      <div class="wish-content">
+        <div class="wish-title">${w.title}</div>
+        <div class="wish-url">${w.url}</div>
+        <div class="wish-date">Saved ${w.added}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function deleteWish(id, e) {
+  e.stopPropagation();
+  const entry = wishlistItems.find(w => String(w.id) === String(id));
+  showConfirm('💖', 'Remove from wishlist?', 'This item will be removed from the wishlist.', async () => {
+    wishlistItems = wishlistItems.filter(w => String(w.id) !== String(id));
+    saveLocal();
+    if (currentUser?.id && sbUrl && entry) await sbDelete('wishlist', entry.sb_id || id);
+    renderWishlist();
+    showToast('Removed from wishlist');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// TRY-ON
+// ══════════════════════════════════════════════════════════
+function loadModelPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('model-img').src = ev.target.result;
+    document.getElementById('model-preview').style.display = 'block';
+    document.querySelectorAll('.tryon-overlay-item').forEach(el => el.remove());
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderTryOn() {
+  const grid = document.getElementById('tryon-grid');
+  if (!clothes.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;padding:20px"><div style="font-size:12px;color:var(--text3)">Add items to your closet first</div></div>`;
+    return;
+  }
+  const itemsWithImg = clothes.filter(c => c.img);
+  const displayItems = itemsWithImg.length ? itemsWithImg : clothes;
+  grid.innerHTML = displayItems.slice(0,9).map(item => `
+    <div class="tryon-item" onclick="selectTryOnItem(this, '${item.id}')">
+      ${item.img ? `<img src="${item.img}" alt="${item.name}" style="width:100%;aspect-ratio:1;object-fit:cover">` : `<div class="ti-ph">${EMOJIS[item.category]||'✦'}</div>`}
+    </div>`).join('');
+  selectedTryOnItem = null;
+}
+
+function selectTryOnItem(el, id) {
+  document.querySelectorAll('.tryon-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTryOnItem = clothes.find(c => String(c.id) === String(id));
+}
+
+function overlaySelected() {
+  const modelImg = document.getElementById('model-img');
+  if (!modelImg.src || modelImg.src === window.location.href) { showToast('Upload a model photo first!'); return; }
+  if (!selectedTryOnItem || !selectedTryOnItem.img) { showToast('Select an item with a photo!'); return; }
+  document.querySelectorAll('.tryon-overlay-item').forEach(el => el.remove());
+  const overlay = document.createElement('img');
+  overlay.src = selectedTryOnItem.img;
+  overlay.className = 'tryon-overlay-item';
+  overlay.style.mixBlendMode = 'multiply';
+  document.getElementById('tryon-overlay-wrap').appendChild(overlay);
+  showToast('✦ Preview applied!');
+}
+
+function tryHuggingFace() {
+  const area = document.getElementById('hf-result-area');
+  const modelImg = document.getElementById('model-img');
+  if (!modelImg.src || modelImg.src === window.location.href) { showToast('Upload a model photo first!'); return; }
+  if (!selectedTryOnItem) { showToast('Select a clothing item first!'); return; }
+  area.innerHTML = `<div class="hf-loading"><div class="spinner"></div><div>Opening Hugging Face IDM-VTON space…</div></div>`;
+  setTimeout(() => {
+    area.innerHTML = `<div class="tryon-tip">
+      <strong>✦ Free AI Try-On via Hugging Face:</strong><br>
+      1. Open <a href="https://huggingface.co/spaces/yisol/IDM-VTON" target="_blank" style="color:var(--primary)">IDM-VTON on Hugging Face →</a><br>
+      2. Upload your model photo as the <em>"Person Image"</em><br>
+      3. Upload the selected clothing item as the <em>"Garment Image"</em><br>
+      4. Click <em>"Run"</em> — results appear in ~30–60 seconds
+    </div>`;
+  }, 1200);
+}
+
+// ══════════════════════════════════════════════════════════
+// WEATHER
+// ══════════════════════════════════════════════════════════
+async function fetchWeather() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const { latitude: lat, longitude: lon } = pos.coords;
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability&temperature_unit=fahrenheit`);
+      const data = await res.json();
+      const temp = Math.round(data.current_weather?.temperature || 60);
+      const code = data.current_weather?.weathercode || 0;
+      const precip = data.hourly?.precipitation_probability?.[new Date().getHours()] || 0;
+
+      let icon = '🌤', desc = '', badge = '', recs = [];
+      const isRainy = code >= 51 || precip > 50;
+      const isCloudy = code >= 3 && code < 51;
+      const isSunny = code < 3;
+
+      if (isRainy) { icon = '🌧'; }
+      else if (isCloudy) { icon = '☁️'; }
+      else if (temp > 80) { icon = '☀️'; }
+      else if (temp < 45) { icon = '🥶'; }
+
+      if (temp > 75) { desc = `It's ${temp}°F and warm`; recs = ['Light tops', 'Skirts', 'Sandals']; badge = '☀️ Go breezy & light'; }
+      else if (temp > 60) { desc = `It's ${temp}°F and mild`; recs = ['Jeans', 'Light jacket']; badge = '🌤 Layers optional'; }
+      else if (temp > 45) { desc = `It's ${temp}°F and cool`; recs = ['Hoodie', 'Jacket']; badge = '🧥 Layer up'; }
+      else { desc = `It's ${temp}°F and cold`; recs = ['Heavy jacket', 'Warm layers']; badge = '🥶 Bundle up!'; }
+
+      if (isRainy) { desc += ' and rainy'; recs.unshift('Hoodie', 'Jacket'); badge = '🌧 Rain-proof outfit'; }
+
+      document.getElementById('weather-icon').textContent = icon;
+      document.getElementById('weather-desc').textContent = `${desc} → ${recs.slice(0,2).join(' + ')} recommended`;
+      document.getElementById('weather-badge').textContent = badge;
+      document.getElementById('weather-card').style.display = 'flex';
+    } catch(e) {}
+  }, () => {});
+}
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════════
+function toggleDarkMode() {
+  const toggle = document.getElementById('dark-toggle');
+  document.body.classList.toggle('dark');
+  toggle.classList.toggle('on');
+  savePrefs();
+}
+
+function setColor(el) {
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const [primary, light, mid, deep] = el.dataset.color.split(',');
+  document.documentElement.style.setProperty('--primary', primary);
+  document.documentElement.style.setProperty('--primary-light', light);
+  document.documentElement.style.setProperty('--primary-mid', mid);
+  document.documentElement.style.setProperty('--primary-deep', deep);
+  savePrefs();
+}
+
+function setFont(el) {
+  document.querySelectorAll('.font-opt').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  document.documentElement.style.setProperty('--font-sans', el.dataset.font);
+  document.body.style.fontFamily = el.dataset.font;
+  savePrefs();
+}
+
+function saveSupabaseConfig() {
+  const url = document.getElementById('sb-url').value.trim();
+  const key = document.getElementById('sb-key').value.trim();
+  if (!url || !key) { showToast('Enter both URL and key!'); return; }
+  localStorage.setItem('emma_sb_url', url);
+  localStorage.setItem('emma_sb_key', key);
+  sbUrl = url; sbKey = key;
+  document.getElementById('sb-status').textContent = '✓ Saved. Refresh to connect.';
+  showToast('✦ Supabase config saved! Refresh to activate.');
+}
+
+function confirmClearAll() {
+  showConfirm('🗑️', 'Clear all data?', 'This will remove all data from this device. Supabase data stays safe.', () => {
+    clothes = []; savedOutfits = []; diaryEntries = []; wishlistItems = [];
+    saveLocal();
+    renderCloset(); renderSaved(); renderDiary(); renderWishlist();
+    showToast('Local data cleared');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// LOCAL STORAGE (fallback / cache)
+// ══════════════════════════════════════════════════════════
+function saveLocal() {
+  try {
+    // Store without large base64 images to avoid quota
+    const liteClothes = clothes.map(c => ({...c, img: c.img && c.img.length < 50000 ? c.img : null}));
+    localStorage.setItem('emma_clothes', JSON.stringify(liteClothes));
+    localStorage.setItem('emma_saved', JSON.stringify(savedOutfits.map(o => ({...o, outfit: {}}))));
+    localStorage.setItem('emma_diary', JSON.stringify(diaryEntries.map(d => ({...d, outfit: null, items: (d.items||[]).map(i => ({...i, img: null}))}))));
+    localStorage.setItem('emma_wish', JSON.stringify(wishlistItems));
+  } catch(e) { /* quota exceeded — ok */ }
+}
+
+function loadLocal() {
+  try {
+    const c = localStorage.getItem('emma_clothes');
+    const s = localStorage.getItem('emma_saved');
+    const d = localStorage.getItem('emma_diary');
+    const w = localStorage.getItem('emma_wish');
+    if (c) clothes = JSON.parse(c);
+    if (s) savedOutfits = JSON.parse(s);
+    if (d) diaryEntries = JSON.parse(d);
+    if (w) wishlistItems = JSON.parse(w);
+  } catch(e) {}
+}
+
+function loadPrefs() {
+  try {
+    const prefs = JSON.parse(localStorage.getItem('emma_prefs') || '{}');
+    if (prefs.dark) { document.body.classList.add('dark'); document.getElementById('dark-toggle').classList.add('on'); }
+    if (prefs.color) {
+      const swatch = document.querySelector(`.color-swatch[data-color="${prefs.color}"]`);
+      if (swatch) setColor(swatch);
+    }
+    if (prefs.font) {
+      const fontEl = document.querySelector(`.font-opt[data-font="${prefs.font}"]`);
+      if (fontEl) setFont(fontEl);
+    }
+    const savedSbUrl = localStorage.getItem('emma_sb_url');
+    const savedSbKey = localStorage.getItem('emma_sb_key');
+    if (savedSbUrl) document.getElementById('sb-url').value = savedSbUrl;
+    if (savedSbKey) document.getElementById('sb-key').value = savedSbKey;
+    if (savedSbUrl && savedSbKey) document.getElementById('sb-status').textContent = '✓ Config saved.';
+  } catch(e) {}
+}
+
+function savePrefs() {
+  const dark = document.body.classList.contains('dark');
+  const activeColor = document.querySelector('.color-swatch.active');
+  const activeFont = document.querySelector('.font-opt.active');
+  localStorage.setItem('emma_prefs', JSON.stringify({
+    dark,
+    color: activeColor?.dataset.color || null,
+    font: activeFont?.dataset.font || null
+  }));
+}
+
+// ══════════════════════════════════════════════════════════
+// SPARKLE / TOAST ANIMATIONS
+// ══════════════════════════════════════════════════════════
+function spawnSparkle() {
+  const s = document.createElement('div');
+  s.className = 'sparkle';
+  s.textContent = ['✨','🌸','💕','✦','🌟'][Math.floor(Math.random()*5)];
+  s.style.left = (30 + Math.random() * 60) + 'vw';
+  s.style.top = (30 + Math.random() * 40) + 'vh';
+  document.body.appendChild(s);
+  setTimeout(() => s.remove(), 800);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ══════════════════════════════════════════════════════════
+// DEMO SEED
+// ══════════════════════════════════════════════════════════
+function seedDemo() {
+  const items = [
+    {name:'Floral midi dress',category:'tops',tags:['floral','feminine','summer']},
+    {name:'White cropped tee',category:'tops',tags:['white','casual','basic']},
+    {name:'Black blazer',category:'jackets',tags:['black','work','chic']},
+    {name:'Light wash jeans',category:'bottoms',tags:['denim','casual','blue']},
+    {name:'Mini skirt',category:'bottoms',tags:['pink','fun','night out']},
+    {name:'White sneakers',category:'shoes',tags:['white','casual','comfy']},
+    {name:'Strappy heels',category:'shoes',tags:['nude','heels','date night']},
+    {name:'Gold hoops',category:'accessories',tags:['gold','everyday','minimal']},
+    {name:'Cozy zip-up hoodie',category:'hoodies',tags:['grey','comfy','casual']},
+  ];
+  items.forEach(item => clothes.push({id: Date.now() + Math.random(), img: null, ...item, fav: false}));
+  wishlistItems.push({
+    id: Date.now() + 1, url: 'https://www.zara.com', title: 'zara.com',
+    favicon: 'https://www.google.com/s2/favicons?domain=zara.com&sz=64', added: 'Demo'
+  });
+  saveLocal();
+  renderCloset();
+  renderWishlist();
+}
+
+// ══════════════════════════════════════════════════════════
+// START
+// ══════════════════════════════════════════════════════════
+boot();
+</script>
 </body>
 </html>
